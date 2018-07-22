@@ -29,4 +29,4 @@ see [Broker version compatibility](https://github.com/edenhill/librdkafka/wiki/B
 api.version.request=false
 broker.version.fallback=0.9.0.1
 ```
-I've struggled with this problem for a while, it's really important to known how [Kafka](https://kafka.apache.org/documentation.html) works and read [librdkafka WIKI](https://github.com/edenhill/librdkafka/wiki) first.
+I've struggled with this problem for a while, it's really important to learn how [Kafka](https://kafka.apache.org/documentation.html) works and read [librdkafka WIKI](https://github.com/edenhill/librdkafka/wiki) first.
