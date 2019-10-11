@@ -24,7 +24,7 @@ inline void Print(const char* msg) { fputs(msg, stderr); }
 template <typename... Args>
 inline void Exit(Args... args) {
   Print(std::forward<Args>(args)...);
-  exit(1);
+  abort();
 }
 
 template <typename... Args>

@@ -108,7 +108,7 @@ class KafkaBase : public PointerHolder<rd_kafka_t> {
 
   void dump(FILE* fp = stderr) const { rd_kafka_dump(fp, get()); }
 
-  const char* getName() const noexcept { return rd_kafka_name(get()); }
+  const char* name() const noexcept { return rd_kafka_name(get()); }
 
  protected:
   // store error in errstr
@@ -162,31 +162,31 @@ class Message final : public PointerHolder<rd_kafka_message_t> {
 
   //    pointer operator->() const noexcept { return get(); }
 
-  const char* getPayload() const noexcept {
+  const char* payload() const noexcept {
     return const_cast<const char*>(static_cast<char*>(get()->payload));
   }
 
-  size_t getPayloadLen() const noexcept { return get()->len; }
+  size_t payloadLen() const noexcept { return get()->len; }
 
-  const char* getKey() const noexcept {
+  const char* key() const noexcept {
     return const_cast<const char*>(static_cast<char*>(get()->key));
   }
 
-  size_t getKeyLen() const noexcept { return get()->key_len; }
+  size_t keyLen() const noexcept { return get()->key_len; }
 
   bool hasError() const noexcept {
     return get()->err != RD_KAFKA_RESP_ERR_NO_ERROR;
   }
 
-  const char* getErrorStr() const noexcept {
+  const char* errorStr() const noexcept {
     return rd_kafka_message_errstr(get());
   }
 
-  int32_t getPartition() const noexcept { return get()->partition; }
+  int32_t partition() const noexcept { return get()->partition; }
 
-  int64_t getOffset() const noexcept { return get()->offset; }
+  int64_t offset() const noexcept { return get()->offset; }
 
-  const char* getTopicName() const noexcept {
+  const char* topicName() const noexcept {
     auto p = get();
     if (p->rkt) {
       return rd_kafka_topic_name(p->rkt);

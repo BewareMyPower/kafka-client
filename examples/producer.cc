@@ -37,7 +37,7 @@ int main(int argc, char* argv[]) {
   Producer producer(std::move(configs.first), errstr);
   if (producer.isNull())
     error::Exit("[ERROR] Create producer failed: %s\n", errstr);
-  error::Print("[INFO] Create producer: %s\n", producer.getName());
+  error::Print("[INFO] Create producer: %s\n", producer.name());
 
   // create topic from topic config, Producer::produce() method need it
   Topic topic(producer.get(), topic_name, std::move(configs.second));

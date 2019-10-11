@@ -33,7 +33,7 @@ int main(int argc, char* argv[]) {
   Consumer consumer(std::move(configs.first), errstr);
   if (consumer.isNull())
     error::Exit("[INFO] Create consumer failed: %s\n", errstr);
-  error::Print("[INFO] Create consumer: %s\n", consumer.getName());
+  error::Print("[INFO] Create consumer: %s\n", consumer.name());
 
   error_code = consumer.subscribe({topic_name});
   error::checkRespError(error_code, "[INFO] Consumer subscribe");
@@ -112,8 +112,8 @@ void msg_consume(const Message& message) {
 
   if (message.hasError()) {
     error::Print("[ERROR] Consume error for topic \"%s\" [%d] offset %ld: %s\n",
-                 message.getTopicName(), message.getPartition(),
-                 message.getOffset(), message.getErrorStr());
+                 message.topicName(), message.partition(),
+                 message.offset(), message.errorStr());
 
     if (message.isTopicInvalid() || message.isPartitionInvalid()) {
       error::Print("[ERROR] invalid topic or partition!\n");
@@ -121,8 +121,8 @@ void msg_consume(const Message& message) {
     }
   } else {
     printf("[Message %zd] \"%s\"[%d]: %lld\n  %.*s\n", ++num_msg,
-           message.getTopicName(), message.getPartition(),
-           static_cast<long long>(message.getOffset()),
-           static_cast<int>(message.getPayloadLen()), message.getPayload());
+           message.topicName(), message.partition(),
+           static_cast<long long>(message.offset()),
+           static_cast<int>(message.payloadLen()), message.payload());
   }
 }
