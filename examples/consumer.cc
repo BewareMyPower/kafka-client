@@ -13,10 +13,12 @@ void msg_consume(const Message& message);
 
 int main(int argc, char* argv[]) {
   // command line config
-  if (argc > 1 &&
-      (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0))
-    error::Exit("Usage: %s [topic-name] [config-path]\n", argv[0]);
-  const char* topic_name = (argc > 1) ? argv[1] : "xyz-topic";
+  if (argc < 2 ||
+      (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)) {
+    fprintf(stderr, "Usage: %s <topic-name> [config-path]\n", argv[0]);
+    exit(1);
+  }
+  const char* topic_name = argv[1];
   std::string configpath = (argc > 2) ? argv[2] : "config/consumer.conf";
 
   // file config
@@ -80,12 +82,8 @@ static void rebalance_cb(rd_kafka_t* rk, rd_kafka_resp_err_t err,
     case RD_KAFKA_RESP_ERR__ASSIGN_PARTITIONS:
       error::Print("%d partitions assigned\n", partitions->cnt);
 
-      // You can manual setting the consumer start offset here
-      partitions->elems[0].offset = 535;
-      partitions->elems[1].offset = 850;
-      partitions->elems[2].offset = 582;
-      partitions->elems[3].offset = 519;
-      partitions->elems[4].offset = 818;
+      // TODO: You can manual setting the consumer start offset here, eg.
+      // partitions->elems[0].offset = 0;
 
       util::printPartitionList(partitions, stderr);
 
@@ -112,15 +110,16 @@ void msg_consume(const Message& message) {
 
   if (message.hasError()) {
     error::Print("[ERROR] Consume error for topic \"%s\" [%d] offset %ld: %s\n",
-                 message.topicName(), message.partition(),
-                 message.offset(), message.errorStr());
+                 message.topicName(), message.partition(), message.offset(),
+                 message.errorStr());
 
     if (message.isTopicInvalid() || message.isPartitionInvalid()) {
       error::Print("[ERROR] invalid topic or partition!\n");
       run = false;
     }
   } else {
-    printf("[Message %zd] \"%s\"[%d]: %lld\n  %.*s\n", ++num_msg,
+    printf("%s [Message %zd] \"%s\"[%d]: %lld\n  %.*s\n",
+           helper::timestampToString(message.timestamp()), ++num_msg,
            message.topicName(), message.partition(),
            static_cast<long long>(message.offset()),
            static_cast<int>(message.payloadLen()), message.payload());

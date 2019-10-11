@@ -5,3 +5,4 @@
 #include "include/rdkafka_error.hpp"
 #include "include/rdkafka_readconfig.hpp"
 #include "include/rdkafka_util.hpp"
+#include "include/helper/timestamp.h"

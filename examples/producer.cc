@@ -13,11 +13,13 @@ static void dr_msg_cb(rd_kafka_t* rk, const rd_kafka_message_t* rkmessage,
 
 int main(int argc, char* argv[]) {
   // command line config
-  if (argc > 1 &&
-      (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0))
-    error::Exit("Usage: %s [topic-name] [config-path]\n", argv[0]);
+  if (argc < 2 ||
+      (strcmp(argv[1], "-h") == 0 || strcmp(argv[1], "--help") == 0)) {
+    fprintf(stderr, "Usage: %s <topic-name> [config-path]\n", argv[0]);
+    exit(1);
+  }
 
-  const char* topic_name = (argc > 1) ? argv[1] : "xyz-topic";
+  const char* topic_name = argv[1];
   std::string configpath = (argc > 2) ? argv[2] : "config/producer.conf";
 
   // if stdin is redirected to file, is_terminal is 0, then

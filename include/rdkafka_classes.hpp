@@ -186,6 +186,11 @@ class Message final : public PointerHolder<rd_kafka_message_t> {
 
   int64_t offset() const noexcept { return get()->offset; }
 
+  // return -1 if failed.
+  int64_t timestamp() const noexcept {
+    return rd_kafka_message_timestamp(get(), nullptr);
+  }
+
   const char* topicName() const noexcept {
     auto p = get();
     if (p->rkt) {
