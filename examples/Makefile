@@ -6,7 +6,7 @@ CXXFLAGS = -std=c++11 -g -I .. -I $(ROOT_RDKAFKA)/include/librdkafka \
 LDFLAGS = -L $(ROOT_RDKAFKA)/lib
 LDLIBS = -lrdkafka -lz -lpthread -lrt
 
-PROGS = producer consumer group_metadata
+PROGS = producer consumer group_metadata offset_manager
 
 all: $(PROGS)
 
