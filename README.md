@@ -45,7 +45,6 @@ broker.version.fallback=0.9.0.1
 
 I've struggled with this problem for a while, it's really important to learn how [Kafka](https://kafka.apache.org/documentation.html) works and read [librdkafka WIKI](https://github.com/edenhill/librdkafka/wiki) first.
 
-## TODO
+## REFACTOR
 
-1. Seperate producer, consumer, message, conf ... to different class;
-2. Provide simpler interface for default produce/consume like [kafkabridge](https://github.com/Qihoo360/kafkabridge).
+Old version SDK in `rdkafka_*.hpp` is a mess, so I've started to write a new SDK in `include/kafka_client` and write some tests in `tests`.
