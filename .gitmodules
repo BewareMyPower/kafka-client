@@ -1,0 +1,4 @@
+[submodule "third_party/librdkafka"]
+	path = third_party/librdkafka
+	url = https://github.com/edenhill/librdkafka.git
+	branch = 1.0.x
