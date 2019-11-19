@@ -1,4 +1,4 @@
-ROOT_RDKAFKA = $(PWD)/..
+ROOT_RDKAFKA = ..
 
 CXX = g++
 CXXFLAGS = -std=c++11 -g -I .. -I $(ROOT_RDKAFKA)/include/librdkafka \
@@ -9,7 +9,6 @@ LDLIBS = -lrdkafka -lz -lpthread -lrt -Wl,-rpath=$(ROOT_RDKAFKA)/lib
 PROGS = producer consumer group_metadata offset_manager
 
 all: $(PROGS)
-	@echo "ROOT_RDKAFKA=$(ROOT_RDKAFKA)"
 
 %: %.cc
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) $< -o $@
