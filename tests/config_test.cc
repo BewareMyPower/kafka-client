@@ -11,10 +11,11 @@ int main(int argc, char* argv[]) {
     if (!value.empty()) {
       cout << "[OK] " << key << "=" << value << endl;
     } else {
-      cerr << "[FAILED] " << config.error() << endl;
+      cerr << "[FAILED] " << config.Error() << endl;
     }
   };
 
+  test_get(nullptr);
   test_get("bootstrap.servers");
   test_get("api.version.request");
 
@@ -22,15 +23,18 @@ int main(int argc, char* argv[]) {
     if (config.Put(key, value)) {
       cout << "[OK] Put " << key << "=" << value << endl;
     } else {
-      cerr << "[FAILED] " << config.error() << endl;
+      cerr << "[FAILED] " << config.Error() << endl;
     }
   };
 
+  test_put(nullptr, nullptr);
+  test_put("bootstrap.servers", nullptr);
   test_put("bootstrap.servers", "localhost:9092");
   test_put("WTF???", "WTF???");
   test_put("api.version.request", "false");
   test_put("api.version.request", "NOT_TRUE_OR_FALSE");
 
+  test_get("bootstrap.servers");
   test_get("api.version.request");
 
   return 0;

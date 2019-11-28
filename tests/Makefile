@@ -8,12 +8,14 @@ CXXFLAGS = -std=c++11 -g -I .. -I $(ROOT_RDKAFKA)/include/librdkafka \
 LDFLAGS = -L $(ROOT_RDKAFKA)/lib
 LDLIBS = -lrdkafka -lz -lpthread -lrt -Wl,-rpath=$(ROOT_RDKAFKA)/lib
 
-PROGS = error_message_test ./config_test 
+SOURCES = error_message_test.cc config_test.cc
+TARGETS = $(SOURCES:.cc=.out)
 
-all: $(PROGS)
+all: $(TARGETS)
+	@echo "Build targets: $(TARGETS)"
 
-%: %.cc
+%.out: %.cc
 	$(CXX) $(CXXFLAGS) $(LDFLAGS) $(LDLIBS) $< -o $@
 
 clean:
-	rm -rf $(PROGS)
+	rm -rf $(TARGETS)

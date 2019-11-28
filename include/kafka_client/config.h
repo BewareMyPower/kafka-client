@@ -1,72 +1,65 @@
 #ifndef KAFKA_CLIENT_CONFIG_H
 #define KAFKA_CLIENT_CONFIG_H
 
-#include <memory>
-#include "kafka_client/error_message.h"
-#include "rdkafka.h"
+#include "kafka_client/config_base.h"
 
 namespace kafka_client {
 
-class GlobalConfig {
+class TopicConfig : public ConfigBase<rd_kafka_topic_conf_t> {
  public:
-  GlobalConfig() : handle_(rd_kafka_conf_new(), &rd_kafka_conf_destroy) {}
+  using Base = ConfigBase<rd_kafka_topic_conf_t>;
 
-  const char* error() const noexcept { return error_.data(); }
-  rd_kafka_conf_t* handle() const { return handle_.get(); }
-
-  // Transfer ownership to user
-  rd_kafka_conf_t* Release() noexcept { return handle_.release(); }
-
-  // Returns false if failed
-  bool Put(const char* key, const char* value);
-
-  // Returns an empty string if failed
-  std::string Get(const char* key) const;
+  TopicConfig()
+      : Base(rd_kafka_topic_conf_new(), &rd_kafka_topic_conf_destroy) {}
 
  private:
-  std::unique_ptr<rd_kafka_conf_t, decltype(&rd_kafka_conf_destroy)> handle_;
-  mutable ErrorMessage error_;
+  rd_kafka_conf_res_t RdKafkaConfSet(const char* name, const char* value,
+                                     char* errstr, size_t errstr_size) override;
+
+  rd_kafka_conf_res_t RdKafkaConfGet(const char* name, char* dest,
+                                     size_t* dest_size) const override;
+
+  const char* name() const { return "TopicConfig"; }
 };
 
-#include <assert.h>
+class GlobalConfig : public ConfigBase<rd_kafka_conf_t> {
+ public:
+  using Base = ConfigBase<rd_kafka_conf_t>;
 
-inline bool GlobalConfig::Put(const char* key, const char* value) {
-  assert(key && value);
-  char errstr[512];
+  GlobalConfig() : Base(rd_kafka_conf_new(), &rd_kafka_conf_destroy) {}
 
-  auto conf_res =
-      rd_kafka_conf_set(handle(), key, value, errstr, sizeof(errstr));
-  if (conf_res != RD_KAFKA_CONF_OK) {
-    error_.Format("GlobalConfig::put key=\"%s\" value=\"%s\" failed: %s", key,
-                  value, errstr);
-    return false;
-  }
+ private:
+  rd_kafka_conf_res_t RdKafkaConfSet(const char* name, const char* value,
+                                     char* errstr, size_t errstr_size) override;
 
-  return true;
+  rd_kafka_conf_res_t RdKafkaConfGet(const char* name, char* dest,
+                                     size_t* dest_size) const override;
+
+  const char* name() const { return "GlobalConfig"; }
+};
+
+inline rd_kafka_conf_res_t TopicConfig::RdKafkaConfSet(const char* name,
+                                                       const char* value,
+                                                       char* errstr,
+                                                       size_t errstr_size) {
+  return rd_kafka_topic_conf_set(handle(), name, value, errstr, errstr_size);
 }
 
-inline std::string GlobalConfig::Get(const char* key) const {
-  assert(key);
+inline rd_kafka_conf_res_t TopicConfig::RdKafkaConfGet(
+    const char* name, char* dest, size_t* dest_size) const {
+  return rd_kafka_topic_conf_get(handle(), name, dest, dest_size);
+}
 
-  size_t value_size = 0;
-  auto conf_res = rd_kafka_conf_get(handle(), key, nullptr, &value_size);
-  if (conf_res != RD_KAFKA_CONF_OK) {
-    error_.Format(
-        "GlobalConfig::get key=\"%s\" failed: Unknown configuration name", key);
-    return "";
-  }
+inline rd_kafka_conf_res_t GlobalConfig::RdKafkaConfSet(const char* name,
+                                                        const char* value,
+                                                        char* errstr,
+                                                        size_t errstr_size) {
+  return rd_kafka_conf_set(handle(), name, value, errstr, errstr_size);
+}
 
-  std::string value(value_size, '\0');
-  conf_res = rd_kafka_conf_get(handle(), key, &value[0], &value_size);
-  if (conf_res != RD_KAFKA_CONF_OK) {
-    error_.Format(
-        "GlobalConfig::get key=\"%s\" failed: Unknown configuration name", key);
-    return "";
-  }
-
-  assert(!value.empty());
-  if (value.back() == '\0') value.pop_back();
-  return value;
+inline rd_kafka_conf_res_t GlobalConfig::RdKafkaConfGet(
+    const char* name, char* dest, size_t* dest_size) const {
+  return rd_kafka_conf_get(handle(), name, dest, dest_size);
 }
 
 }  // namespace kafka_client
